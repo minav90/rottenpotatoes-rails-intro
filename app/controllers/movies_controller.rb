@@ -11,22 +11,44 @@ class MoviesController < ApplicationController
   end
 
   def index
+    
+    setRatings
 
-    @all_ratings = Movie.all_ratings
-    id = params[:item]
-   if(id == "Title") then
-    @sort = "Title"
-    @movies = Movie.order("title").all
-   elsif(id == "Date") then
-    @sort = "Date"
-    @movies = Movie.order("release_date").all
-   else
-    @movies = Movie.all
-   end 
    if params[:ratings].present? then
-   @choices = params[:ratings].keys;
-   @movies = Movie.where(:rating => @choices).all
+   session[:ratings] = params[:ratings].keys
+   end 
+
+   if params[:item].present? then
+    session[:item] = params[:item]
    end
+   
+   if(session[:item] == "Title") then
+      @sort = "Title"
+      if session[:ratings].present? then
+        @movies = Movie.where(:rating => session[:ratings]).order("title")
+      else
+        @movies = Movie.order("title").all
+      end
+   elsif(session[:item] == "Date") then
+      @sort = "Date"
+      if session[:ratings].present? then
+        @movies = Movie.where(:rating => session[:ratings]).order("release_date")
+      else
+        @movies = Movie.order("release_date").all
+      end
+   else
+      if session[:ratings].present? then
+        @movies = Movie.where(:rating => session[:ratings]).all
+      else
+        @movies = Movie.all
+      end
+   end
+
+
+  end
+
+  def setRatings
+    @all_ratings = Movie.all_ratings
   end
 
   def new
