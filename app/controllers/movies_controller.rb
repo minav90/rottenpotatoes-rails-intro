@@ -13,8 +13,10 @@ class MoviesController < ApplicationController
   def index
    id = params[:item]
    if(id == "Title") then
+    @sort = "Title"
     @movies = Movie.order("title").all
    elsif(id == "Date") then
+    @sort = "Date"
     @movies = Movie.order("release_date").all
    else
     @movies = Movie.all
